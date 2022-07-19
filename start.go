@@ -9,7 +9,17 @@ import (
 	"regexp"
 )
 
+/*
+1) Сделать один файл в json
+2) Каждый таск имел свой id ,время создания, title,
+3) если в таске нету id и time, то добавить автоматически время и рандомное число id
+4)
+*/
 type TaskList struct {
+	id int
+	//time
+	//title string
+
 	Name string
 	Task []byte
 }
@@ -21,6 +31,7 @@ func (t *TaskList) save() error {
 	filename := t.Name + ".txt"
 	return os.WriteFile(filename, t.Task, 0600)
 }
+
 func getName(w http.ResponseWriter, r *http.Request) (string, error) {
 	m := validPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
@@ -29,13 +40,18 @@ func getName(w http.ResponseWriter, r *http.Request) (string, error) {
 	}
 	return m[2], nil
 }
+
 func loadTaskList(name string) (*TaskList, error) {
-	filename := name + ".txt"
-	body, err := os.ReadFile(filename)
+	filename := name + ".txt"          // need id
+	body, err := os.ReadFile(filename) //need to read json
 	if err != nil {
 		return nil, err
 	}
 	return &TaskList{Name: name, Task: body}, nil
+}
+
+func viewAllHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 func viewHandler(w http.ResponseWriter, r *http.Request, name string) {
 	//name, err := getName(w, r)
@@ -65,8 +81,9 @@ func saveHandler(w http.ResponseWriter, r *http.Request, name string) {
 	//if err != nil {
 	//	return
 	//}
-	body := r.FormValue("body")
+	body := r.FormValue("body") // принимает значения из формы
 	p := &TaskList{Name: name, Task: []byte(body)}
+
 	err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -92,6 +109,7 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 func main() {
+	//http.HandleFunc("/", makeHandler(viewAllHandler))
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
