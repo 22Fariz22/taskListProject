@@ -92,9 +92,23 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 func main() {
-	http.HandleFunc("/view/", makeHandler(viewHandler))
-	http.HandleFunc("/edit/", makeHandler(editHandler))
-	http.HandleFunc("/save/", makeHandler(saveHandler))
+	http.HandleFunc("/", makeHandler(indexFunc))
+
+	http.HandleFunc("/addnewtask", makeHandler(AddNewTaskFunc))
+	http.HandleFunc("/notsucceded", makeHandler(NotSucceded))
+
+	http.HandleFunc("/deleted", makeHandler(DeletedFunc))
+	http.HandleFunc("/deletetask/deleted", makeHandler(DeleteTaskFunc))
+	http.HandleFunc("/deletetask", makeHandler(DeleteTaskServe))
+	http.HandleFunc("/deletetask/notsuccededdelete", makeHandler(NotSuccededDelete))
+
+	http.HandleFunc("/showuser/show", makeHandler(ShowUserFunc))
+	http.HandleFunc("/showuser/", makeHandler(ShowUser))
+	http.HandleFunc("/showuser/notsuccededshow/", makeHandler(NotSuccededShow))
+
+	//http.HandleFunc("/view/", makeHandler(viewHandler))
+	//http.HandleFunc("/edit/", makeHandler(editHandler))
+	//http.HandleFunc("/save/", makeHandler(saveHandler))
 
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
